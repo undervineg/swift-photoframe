@@ -485,9 +485,12 @@ UITextField object.
 	- **파일 저장**: 이미지, 미디어 파일 등 큰 사이즈의 데이터 저장. (추후 설명)
 	- **네트워크 전송**: 서버에 데이터를 전송하여 저장. (추후 설명)
 
+[참고: 꼼꼼한 재은씨의 Swift3 기본편](http://www.kyobobook.co.kr/product/detailViewKor.laf?ejkGb=KOR&barcode=9791186710104)
+
 <br/>
 
 ## UIImageView 활용하기
+
 <img src="img/7_imageview1.png" width="30%"></img>
 <img src="img/7_imageview2.png" width="30%"></img>
 <img src="img/7_imageview3.png" width="30%"></img>
@@ -623,6 +626,8 @@ self.photoImageView.image = UIImage(named: String(format: "%02d.jpg", Int(arc4ra
 >- **cameraOverlayView** 프로퍼티에 커스텀 뷰를 할당할 수 있으며, 이 뷰를 이용해서 추가적인 정보를 보여주거나 카메라 인터페이스와 커스텀 코드 사이를 이어줄 수 있다.
 
 [참고: UIImagePickerController](https://developer.apple.com/documentation/uikit/uiimagepickercontroller)
+
+[참고: 꼼꼼한 재은씨의 Swift3 기본편](http://www.kyobobook.co.kr/product/detailViewKor.laf?ejkGb=KOR&barcode=9791186710104)
 
 <br/>
 
