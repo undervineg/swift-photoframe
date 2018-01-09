@@ -249,14 +249,16 @@ UITextField object.
 <br/>
 
 ## 화면전환의 종류
-1. **Modal 방식: 뷰 컨트롤러 직접 호출**
+- **Modal 방식: 뷰 컨트롤러 직접 호출**
 	- 모달 프레젠테이션 스타일: **UIModalPresentationStyle** 객체 속성
 		- fullScreen
 		- currentContext
 		- overFullScreen
 		- overCurrentContext
-2. **Container 방식: 내비게이션 컨트롤러, 탭바 컨트롤러 등을 통한 호출**
-3. **Segue 방식: 스토리보드에서 화면 연결**
+- **Container 방식: 내비게이션 컨트롤러, 탭바 컨트롤러 등을 통한 호출**
+- **Segue 방식: 스토리보드에서 화면 연결**
+
+<br/>
 
 ### 1. Modal 방식
 - 현재 뷰 컨트롤러에서 **이동할 대상 뷰 컨트롤러를 직접 호출하여 표시**하는 방식으로, **프레젠테이션 방식**이라고 함.
@@ -485,130 +487,6 @@ UITextField object.
 
 <br/>
 
-## 앱 인터페이스와 구성요소
-### 화면을 구성하는 세 가지 주요객체
-1. **UIScreen**: 기기에 연결되는 물리적인 화면을 정의하는 객체
-2. **UIWindow**: 화면 그리기 지원 도구를 제공하는 객체. 
-	- 디바이스 스크린을 빈틈없이 채우기 위한 객체
-	- 항상 유저 인터페이스 표현 계층의 최상위에 위치한다. 
-	- 뷰의 일종이지만 **직접 콘텐츠를 가지지 않는다**. **UIView들이 콘텐츠를 표현하면 디바이스 스크린에 이를 표현**한다.
-	- **화면이 전환되더라도 윈도우 객체는 전환되지 않는다**. 내부에 배치된 뷰의 콘텐츠만 변경된다.
-3. **UIView**: 그리기를 수행할 객체 세트
-	- 콘텐츠를 담아 스크린상에 표시한다. 
-	- 사용자의 입력에 반응한다. 
-	- 윈도우의 일부를 자신의 영역으로 정의하고, 이에 필요한 콘텐츠를 채워넣는다.
-	- **윈도우로부터 전달된 사용자 입력에 반응**하고 그에 맞는 결과를 처리한다.
-
-![](img/5_architect.png)
-
-<br/>
-
-## 건드릴 수 없는 영역: System Framework
-### 앱 초기화 과정
-#### objective-c 기준
-1. 앱 실행: **main() 함수 실행됨**
-2. main(): **UIApplicationMain() 호출**
-3. UIApplicationMain(): **UIApplication 객체 생성**
-4. UIApplication 객체: Info.plist 파일을 바탕으로 앱에 필요한 데이터와 객체 로드
-5. **AppDelegate 객체 생성** 및 UIApplication 객체와 연결
-
------------- **스위프트는 C 기반 언어가 아니기 때문에, 엔트리 포인트가 없으며 어노테이션 표기로 대체함: @UIApplicationMain** ------------
-
-6. 이벤트 루프 생성 등 실행에 필요한 준비 진행
-7. 실행 완료 직전, **AppDelegate의 application(_:didFinishLaunchingWithOptions:) 메소드 호출**
-
-#### 엔트리 포인트: main()
-- Xcode 프로젝트 생성 시 main(int argc, char* arg[])함수가 자동으로 생성됨.
-- 실행 시 시스템으로부터 받은 2개의 인자값과 AppDelegate 클래스를 이용하여 UIApplicationMain() 함수 호출 -> UIApplication 객체 반환.
-
-#### 앱 그 자체를 의미하는 객체: UIApplication
-- UIAppliaction 객체는 이벤트 루프나 다른 높은 수준의 앱 동작을 관리하거나 푸시알림 등의 특수 이벤트를 델리게이트에게 알려주는 등의 일을 한다. 
-- 이 때, **UIApplication을 서브 클래싱하지 않고 그대로 사용하기에는 한계가 있는데**, 특정 의도나 목적에 맞게 특별한 일을 처리해야 할 때가 많기 때문이다.
-- 따라서 UIApplication 객체는 **대리인인 AppDelegate 객체를 내세워 커스텀 코드를 처리할 수 있도록 약간의 권한을 부여**한다.
-- 이에 따라 UIApplication은 앱의 생명주기나 이벤트 처리와 같이 중요한 일들을 담당하고, AppDelegate는 커스텀 코드를 처리하게 된다.
-
-#### 위임받은 권한을 이용하여 커스텀코드와 상호작용하는 객체: AppDelegate
-- AppDelegate 객체는 커스터마이징하거나 서브클래싱 할 수 있도록 오픈되어 있다. 
-- 앱 내에서 **오직 하나의 인스턴스**만 생성되도록 보장받는다.
-- **앱 전체의 생명주기와 함께 한다**. 앱이 처음 만들어질 때 객체가 생성되고, 앱이 실행되는동안 유지되다가, 앱이 종료되면 소멸한다.
-- 따라서 AppDelegate 객체는 **종종 앱의 초기 데이터 구조를 설정하기 위해 사용되기도 한다**. (AppDelegate 객체에 데이터를 저장하면 앱 종료 전까지 데이터를 유지할 수 있으므로)
-
-![](img/6_iOSAppLaunchLifeCycle.png)
-
-<br/>
-
-### MVC 패턴 구조
-![](img/6_mvc.png)
-
-<br/>
-
-### 앱 생명주기
-#### iOS는 모든 앱의 상태 변화를 제어하여 실행시키거나 종료시키는 등 다양한 처리를 한다.
-#### iOS에서 앱이 가질 수 있는 상태값:
-- **Not Running** - 앱이 시작되지 않았거나 시스템에 의해 종료된 상태
-- **Inactive** - 앱이 전면에서 실행 중이지만 **아무런 이벤트를 받지 않고 있는** 상태
-- **Active** - 앱이 전면에서 실행 중이며, 이벤트를 받고 있는 상태
-- **Background** - 앱이 **백그라운드**에 있지만 **여전히 코드가 실행**되고 있는 상태. 대부분의 앱은 **Suspended 상태로 이행하는 도중 일시적으로 Background 상태에 진입**한다. 파일 다운로드, 업로드, 연산 처리 등 **여분의 실행시간이 필요한 앱인 경우, 특정 시간동안 이 상태로 남아 있는** 경우도 있다.
-- **Suspended** - 앱이 **메모리에 유지**되지만 **실행되는 코드가 없는** 상태. **메모리가 부족한 상황**이 오면 **시스템은 특별한 알림 없이 Suspended 상태의 앱들을 정리**한다.
-
-<center><img src="img/6_appstate.png" width="60%"></img></center>
-
-- 앱 실행상태가 변할 때마다 AppDelegate에 정의된 특정 메소드가 호출됨
-	- **application(_:willFinishLaunchingWithOptions:)**: 앱이 구동되어 필요한 **초기 실행 과정이 완료되기 직전**에 호출된다.
-	- **application(_:didFinishLaunchingWithOptions:)**: 앱이 사용자에게 **화면으로 표시되기 직전**에 호출된다. 앱이 실행된 후 진행할 커스터마이징이나 초기화를 위한 코드를 작성한다.
-	- **applicationDidBecomeActive()**: **실행된 앱이 전면(foreground)에 표시될 때** 호출된다. 앱이 **Inactive 상태에서 재시작하는 코드**를 넣어주면 일시중지된 작업을 갱신할 수 있다.
-	- **applicationDidEnterBackground()**: **앱이 백그라운드 상태에 진입했을 때** 호출된다. 어느 순간 종료될 가능성이 있으므로, **잃어선 안되는 사용자 데이터를 종료 전에 미리 저장**하거나, **공유자원이 있다면 해제**하는 코드를 작성한다. **종료된 앱이 다시 실행될 때 현재 상태를 복구하기 위한 상태 정보를 저장**하는 코드도 작성하면 좋다.
-	- **applicationWillTerminate()**: **앱이 종료되기 직전**에 호출된다. 사용자 데이터 등을 종료 전에 **한 번 더 저장**한다.
-- 이 외에도 더 다양한 상태 변화에 대응하기 위한 메소드를 구현할 수 있다. [UIAppDelegateProtocol 공식문서](https://developer.apple.com/documentation/uikit/uiapplicationdelegate)를 참고한다.
-
-<br/>
-
-### iOS와 코코아 터치 프레임워크
-#### 네이티브 앱과 웹 앱의 차이점
-- **네이티브 앱**: iOS 시스템 프레임워크를 기반으로 하고 스위프트/오브젝티브-C 언어로 개발되며 iOS를 통해 직접 실행되는 앱
-- **웹 앱**: 사파리 브라우저를 통해 실행되는 앱으로, 네이티브 앱과 유사한 UI, 기능을 제공할 수 있도록 제작하는 앱
-- 네이티브 앱은 기기에 물리적으로 설치되기 때문에 네트워크 없이도 실행 가능하나, 웹 앱은 네트워크가 연결되지 않은 상태에서는 이용할 수 없다.
-- 또한, **iOS는 기기와 네이티브 앱 사이를 중계**하는 반면, 웹 앱은 하드웨어 기능 사용에 제약이 많기 때문에 대체재로 사용되기엔 무리가 있다.
-
-#### 하드웨어와 앱 사이를 중계해주는 iOS 인터페이스: 코코아 터치 프레임워크
-- 애플 환경에서 터치 기반의 앱 제작을 위한 도구로, 용도에 따라 여러 개의 하위 프레임워크로 나뉜다.
-- 주요 프레임워크:
-	- **Foundation** - 어플리케이션 핵심 객체, 네트워크, 문자열 처리 등의 서비스 제공
-	- **UIKit** - 유저 인터페이스 제공 (아이폰, 아이패드, 애플워치, 애플TV 등 지원)
-	- GameKit - 게임 센터 연동, 근거리 P2P 연결 제공
-	- iAd - 앱 내 배너 형태 또는 팝업 형태의 광고 삽입 가능
-	- MapKit - 위치 정보, 지도 관련 서비스 이용 가능
-	- Address Book UI - 주소록 앱의 인터페이스 및 기능을 커스텀 앱에서도 그대로 사용할 수 있도록 지원
-	- EventKit UI - 이벤트 처리에 필요한 유저 인터페이스 제공
-	- Message UI - 메시지 앱의 인터페이스 및 기능을 커스텀 앱에서도 그대로 사용할 수 있도록 지원
-	- UserNotifications - 사용자 알림을 처리하기 위해 필요한 객체들 제공
-- 코코아 프레임워크?
-	- macOS에서 쓰이는 프레임워크로, 코코아 터치 프레임워크는 이를 바탕으로 만들어졌다.
-	- 코코아 프레임워크도 동일한 Foundation 프레임워크를 가지며, UIKit 대신 데스크톱용 유저 인터페이스를 담당하는 AppKit 프레임워크를 가진다.
-	- macOS 외에 iOS, watchOS, tvOS 모두 코코아 터치 프레임워크를 사용한다.
-
-#### 프레임워크의 계층 관계
-- 보통은 상위 프레임워크만 가지고 앱을 만들 수 있으나, 상위 프레임워크가 제공하지 않는 기능을 구현해야 할 때는 하위 프레임워크를 알아야 한다.
-- iOS 프레임워크 계층 구조:
-![](img/6_frameworks.png)
-[출처: slideshare](https://www.slideshare.net/vutlam9083/session-1-introduction-to-i-os-7-and-sdk)
-	- 코어 OS 계층: iOS가 운영체제로서 기능하기 위한 핵심 영역으로, 커널, 파일시스템, 네트워크, 보안, 전원관리, 디바이스 드라이브 등이 포함된다.
-	- 코어 서비스 계층: 핵심 서비스 기능(Foundation), 데이터 저장 기능(Core Data), 센서 기반 서비스 제공. Foundation이 의존하는 CoreFoundation도 포함되며, Core Location, Core Motion, Core Animation 등이 포함돼 있다.
-	- 미디어 계층: 그래픽 또는 멀티미디어 관련 서비스 제공. Core Graphics, Core Text, Core Audio, Core Animation, AVFoundation, OpenGL ES 등이 포함된다.
-	- 코코아 터치 계층: 어플리케이션을 직접 지원하는 역할. UIKit, Game Kit, Map Kit 등이 포함된다.
-- 주요 프레임워크들은 자신에게 속해있는 객체 이름에 특정 접두어를 붙이는 경향이 있다.
-	- Foundation: NS-
-	- UIKit: UI-
-	- UserNotifications: UN-
-	- MapKit: MK-
-	- Core Foundation: CF-
-	- Core Graphics: CG-
-	- AVFoundation: AV-
-
-**[출처: 꼼꼼한 재은씨의 스위프트3](http://www.kyobobook.co.kr/product/detailViewKor.laf?ejkGb=KOR&barcode=9791186710104)**
-
-<br/>
-
 ## UIImageView 활용하기
 <img src="img/7_imageview1.png" width="30%"></img>
 <img src="img/7_imageview2.png" width="30%"></img>
@@ -655,6 +533,162 @@ self.photoImageView.image = UIImage(named: String(format: "%02d.jpg", Int(arc4ra
 
 - **미리 객체를 만들어놓는 방식이 항상 좋은 것은 아니다**: ViewController 생성 시점에 모든 이미지를 한꺼번에 메모리에 올리게 되면 폴더에 파일이 100개, 1000개 이상 있는 경우 화면이 보이지도 않고 **시커먼 화면**이 보일지도 모른다.
 - **보통 사용자가 편하면 개발자가 (작성한 코드까지도!) 불편해진다.**
+
+<br/>
+
+## UIImagePickerController 활용하기
+
+<img src="img/8_imagepicker1.png" width="19%"></img>
+<img src="img/8_imagepicker2.png" width="19%"></img>
+<img src="img/8_imagepicker3.png" width="19%"></img>
+<img src="img/8_imagepicker4.png" width="19%"></img>
+<img src="img/8_imagepicker5.png" width="19%"></img>
+
+### 구현과정
+#### 이미지 피커 불러오기
+- 아래 [이미지 피커 컨트롤러 사용방법] 참고
+
+#### 권한 설정
+- 앱에서 유저의 사적인 데이터에 접근하기 위해서는 유저에게 권한을 요청해야 한다. 
+- 권한이 필요한 프레임워크로는 **Calendar , Contact , Reminder , Photo , Bluetooth Sharing , Microphone , Camera , Location , Heath , HomeKit , Media Library , Motion , CallKit , Speech Recognition , SiriKit , TV Provider** 가 있다.
+- 앱에서 필요한 권한은 **Info.plist 파일**에 선언할 수 있다.
+- **[privacy key 확인하기](https://iosdevcenters.blogspot.com/2016/09/infoplist-privacy-settings-in-ios-10.html)**
+
+#### 선택된 사진 받아오기
+- delegate 클래스 내부에 **[imagePickerController(_:didFinishPickingMediaWithInfo:)](https://developer.apple.com/documentation/uikit/uiimagepickercontrollerdelegate/1619126-imagepickercontroller)** 함수 구현: 유저가 이미지나 영상을 pick했다는 것을 delegate에게 알려줌.
+	1. 두번째 파라미터 **info**에서 UIImagePickerControllerEditedImage 키로 수정된 이미지 데이터 가져옴
+	2. 사진이 nil 이 아닌 경우, UIImageView에 사진을 표시한다.
+	3. 이미지 피커를 dismiss 한다.
+
+**[참고: Coding Explorer Blog](http://www.codingexplorer.com/choosing-images-with-uiimagepickercontroller-in-swift/)**
+
+<br/>
+
+### UIImagePickerController란?
+- 앱에서 카메라나 앨범 등을 통해 이미지를 선택할 때 사용하는 컨트롤러
+- 동작방식: 
+	- 이미지 피커 컨트롤러는 개발자가 의도한 시점에 소스코드를 통해 호출되어 **앱의 제어 권한을 가져가고(OS)**, 유저가 촬영을 하거나 이미지를 선택하면 해당 **이미지 정보만 전달**한다. 
+	- 이미지 정보는 **델리게이트**로 지정된 객체의 **메소드 인자값으로 전달**된다.
+- 이미지 피커 컨트롤러는 인터페이스 빌더의 오브젝트 라이브러리에 포함되어 있지 않기 대문에 스토리보드를 이용하여 구성할 수 없다. 소스코드를 통해 직접 인스턴스를 생성하고 화면을 호출해야 한다.
+
+#### 속성
+- sourceType: 어떤 소스를 기반으로 이미지를 가져올 것인지 선택하는 속성
+	- **camera**: 즉석으로 사진을 촬영하여 이미지를 생성하는 옵션
+	- **photoLibrary**: 이미지 라이브러리에서 이미지를 선택하는 옵션
+	- **savedPhotosAlbum**: 저장된 사진 앨범에서 이미지를 선택하는 옵션
+- allowsEditing: 이미지 편집 가능 여부 설정
+- **delegate**: **이미지를 반환받을 대상**을 지정하는 속성
+	- self로 지정 시, 이미지를 자신의 뷰 컨트롤러로 전달받겠다는 의미
+	- 선택한 이미지는 델리게이트 메소드를 통해 전달받게 되므로, 이를 위해 델리게이트 프로토콜을 구현해야 한다.
+		- **UIImagePickerControllerDelegate**
+		- **UINavigationControllerDelegate**
+	- 이미지 피커 컨트롤러가 호출하는 델리게이트 메소드
+		- imagePickerController(_:didFinishPickingMediaWithInfo:)
+			- 첫 번째 인자: 메소드를 호출하는 이미지 피커 컨트롤러 객체. **하나의 뷰 컨트롤러에서 두 개이상의 이미지 피커 컨트롤러를 사용할 떼** 어느 이미지 피커가 호출되었는지 확인 가능
+			- 두 번째 인자: 선택된 **이미지 객체에 대한 종합정보**가 딕셔너리로 전달됨. 아래의 키를 사용하여 원하는 정보만 추출.
+
+				> Editing Information Keys
+				>
+				>- UIImagePickerControllerMediaType: 유저가 선택한 미디어의 타입
+				>- UIImagePickerControllerOriginalImage: 유저가 선택한 이미지 원본
+				>- UIImagePickerControllerImageURL: 유저가 선택한 이미지 파일 URL
+				>- UIImagePickerControllerEditedImage: 유저가 수정한 이미지
+				>- UIImagePickerControllerCropRect: 원본을 crop한 사각형 이미지
+				>- UIImagePickerControllerMediaURL: 영상의 파일경로 URL
+				>- UIImagePickerControllerMediaMetaData: 카메라로 새로 찍은 이미지의 메타데이터
+				>- UIImagePickerControllerLivePhoto: 새로 찍거나 선택한 이미지의 라이브 포토
+				>- UIImagePickerControllerPHAsset: 이미지의 Photos asset 가져옴
+
+		- imagePickerControllerDidCancel(_:)
+
+- 화면에 띄울 때는 다음 방식이 적합하다:
+	- iPhone: **모달 방식**(present)
+	- iPad: 
+		- Camera: **Full Screen**
+		- Photo Library: **Popover**(must)
+		- Saved Photos Album: **Popover**(must)
+	- [참고: UIPopoverPresentationController](https://developer.apple.com/documentation/uikit/uipopoverpresentationcontroller)
+- 콘텐츠를 선택하거나 취소 버튼을 누르는 등의 이벤트 발생 시, dismiss 한다:
+	- `picker.dismiss(animated: false)`
+	- 이때, picker.presentingViewController?.dismiss() 또는 self.dismiss() 라고 쓸 수 있음에도 굳이 **picker 인스턴스**를 사용한 이유는 **내부적으로 알아서 self.presentingViewController 쪽으로 연결시켜주기 때문**이다.
+	- picker.dismiss()가 호출되면 가장 먼저 자신이 치워야 할 뷰 컨트롤러가 있는지 확인한다. 자신 위에 다른 화면이 덮고 있다면 그것을 치우지만 아무 화면도 없다면 self.presentingViewController에 해당하는 객체에 요청을 전달한다.
+	- 피커를 닫고나서 이미지를 띄울 수 있도록 클로저 안에 이미지를 띄우는 로직을 추가한다.
+
+
+>- 기기가 선택한 sourceType을 지원하는 지 확인: 
+	- `if UIImagePickerController.isSourceTypeAvailable(.photoLibrary) { ... }`
+>- 선택한 sourceType에서 사용 가능한 미디어 타입 확인: availableMediaTypes()
+>- UIImagePickerController 클래스는 **portrait 모드만 지원**한다.
+>- as-is로 사용해야 하며, 서브클래싱을 지원하지 않는다.
+>- **cameraOverlayView** 프로퍼티에 커스텀 뷰를 할당할 수 있으며, 이 뷰를 이용해서 추가적인 정보를 보여주거나 카메라 인터페이스와 커스텀 코드 사이를 이어줄 수 있다.
+
+[참고: UIImagePickerController](https://developer.apple.com/documentation/uikit/uiimagepickercontroller)
+
+<br/>
+
+#### 그 외 작업 가능 사항
+- 플래시 모드로 전환
+- 동영상 작업하기
+- 라이브 포토 다루기
+- 캡쳐 및 검색하기
+- [참고: Apple Developer 문서](https://developer.apple.com/documentation/uikit/uiimagepickercontroller)
+
+<br/>
+
+#### 주제별 관련 인터페이스
+- 피커에 발생하는 이벤트에 반응하기
+	- [delegate](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/1619145-delegate)
+
+- 피커에 리소스 세팅하기
+	- [sourceType](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/1619167-sourcetype)
+	- [availableMediaTypes(for: UIImagePickerControllerSourceType)](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/1619169-availablemediatypes)
+	- [isSourceTypeAvailable(UIImagePickerControllerSourceType)](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/1619144-issourcetypeavailable)
+
+- 피커 설정하기
+	- [mediaTypes](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/1619173-mediatypes)
+	- [allowsEditing](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/1619137-allowsediting)
+
+- 이미지나 영상 캡쳐하기
+	- [takePicture()](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/1619160-takepicture)
+	- [startVideoCapture()](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/1619123-startvideocapture)
+	- [stopVideoCapture()](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/1619140-stopvideocapture)
+
+- 사용할 카메라 설정하기
+	- [isCameraDeviceAvailable(UIImagePickerControllerCameraDevice)](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/1619159-iscameradeviceavailable)
+	- [cameraDevice](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/1619117-cameradevice)
+
+- 이미지를 앱으로 보내기
+	- [imageExportPreset](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/2897484-imageexportpreset)
+	- [videoExportPreset](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/2890964-videoexportpreset)
+
+- 기타
+	- 카메라 기능 커스터마이징하기
+	- 비디오 캡쳐 옵션 설정하기
+	- 카메라 캡쳐 모드 설정하기
+	- 플래시 설정하기
+
+<br/>
+
+## MVC와 delegate, protocol의 상관관계
+### View --[Delegate]--> Controller
+- MVC 패턴에서 뷰는 컨트롤러에게 일정 책임을 위임한다. 뷰 객체에는 delegate 프로퍼티가 있다.
+- 뷰마다 위임할 수 있는 역할이 각 뷰의 Delegate 프로토콜에 정의되어 있다.
+- delegate는 뷰 객체의 프로퍼티인데, 뷰 컨트롤러는 자기자신을 할당한다. delegate 프로토콜에 들어갈 수 있는 타입이 정해져 있으므로, 컨트롤러는 해당 Delegate 프로토콜을 채택해야 한다.
+- 뷰의 프로퍼티일 뿐인 delegate에는 어떤 타입의 객체가 들어올지 모르기 때문에 프로토콜 타입으로 정의되어 있다.
+- **뷰의 delegate에 뷰컨트롤러를 할당하지 않으면** 아무리 뷰컨트롤러에서 delegate 인터페이스들을 구현했더라도, **뷰와 뷰컨트롤러가 연결되지 않았으므로 뷰컨트롤러에 구현한 메소드가 실행되지 않는다.**
+
+```swift
+// 뷰에 특정 이벤트가 발생하면 델리게이트 프로토콜에 정의된 메소드가 호출되고, 뷰컨트롤러에 구현한 로직이 실행된다.
+self.imagePicker.delegate = self
+```
+
+### View <--[Data Source]-- Controller
+- 뷰는 모델에 변경이 있으면 갱신되어야 한다. 
+- 기본적으로 뷰와 모델은 소통할 수 없다.
+- 따라서 뷰는 뷰컨트롤러에게 데이터의 변경사항이 있는지 물어본다. 
+- 이 때 물어보는 메시지를 전달하는 프로토콜을 DataSource 라고 부른다.
+
+**[참고: 허진한의 성장하는 개발자 이야기](http://hjh5488.tistory.com/27)**
 
 <br/>
 
